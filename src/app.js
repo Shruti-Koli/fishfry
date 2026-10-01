@@ -10,7 +10,7 @@ app.use(express.json());
 app.get("/health",(req,res)=>{
     res.json({
         status : 200,
-        db : mongoose.connection.readyState === 1 ? "Connected" : "Not Connected"
+        db : mongoose.connection.readyState === 1 ? "Connected To DB" : "Not Connected"
     });
 });
 
