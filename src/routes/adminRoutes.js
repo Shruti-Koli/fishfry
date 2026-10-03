@@ -6,7 +6,7 @@ export const adminRoutes = Router();
 
 adminRoutes.get("/users",  async (req, res) => {
   try {
-    let result = await userListController(req.body);
+    let result = await userListController(req.query);
     return sendResponse(res, result);
   } catch (error) {
     console.error("Registration failed:", error);
