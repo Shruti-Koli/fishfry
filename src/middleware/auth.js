@@ -33,7 +33,7 @@ export const authMiddleware = (req, res, next) =>{
       });
     }
 
-    req.user = payload;
+    req.user = userData;
     return next();
 
   }catch (error){

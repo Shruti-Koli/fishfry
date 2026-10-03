@@ -12,7 +12,10 @@ export const registerSchema = z.object({
     .trim()
     .min(1, "Password is required")
     .min(8, "Password must be at least 8 characters long")
-    .max(50),
+    .max(50)
+    .refine((password) => Buffer.byteLength(password, "utf8") <= 72, {
+      message: "Password too long",
+    }),
   role: z
     .enum(["user", "admin"], "Role must be one of user, admin")
     .default("user"),
@@ -30,4 +33,7 @@ export const loginSchema = z.object({
     .min(1, "Password is required")
     .min(8, "Password must be at least 8 characters long")
     .max(100)
+    .refine((password) => Buffer.byteLength(password, "utf8") <= 72, {
+      message: "Password too long",
+    }),
 });
