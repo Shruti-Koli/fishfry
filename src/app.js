@@ -7,6 +7,7 @@ import { userRoutes } from "./routes/userRoutes.js";
 import { adminRoutes } from "./routes/adminRoutes.js";
 import { authMiddleware } from "./middleware/auth.js";
 import { requireRoles } from "./middleware/requireRole.js";
+import { taskRouter } from "./routes/taskRoutes.js";
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.get("/health",(req,res)=>{
 
 app.use("/api/auth", userRoutes);
 app.use("/api/admin",authMiddleware,requireRoles(["admin"]), adminRoutes);
+app.use("/api/task",authMiddleware, taskRouter);
 
 
 export default app;
