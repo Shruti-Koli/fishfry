@@ -1,6 +1,8 @@
 import { UserCollection } from "../schemas/User.js";
 import bcryptjs from "bcryptjs";
 import { createToken } from "../utils/token.js";
+
+
 export const userRegistrationController = async (data) => {
   try {
     data.password = await bcryptjs.hash(data.password, 10);
@@ -59,3 +61,4 @@ export const loginController = async (data) => {
     throw error;
   }
 };
+

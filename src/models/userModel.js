@@ -12,7 +12,7 @@ export const registerSchema = z.object({
     .trim()
     .min(1, "Password is required")
     .min(8, "Password must be at least 8 characters long")
-    .max(100),
+    .max(50),
   role: z
     .enum(["user", "admin"], "Role must be one of user, admin")
     .default("user"),
