@@ -13,7 +13,7 @@ export const userRegistrationController = async (data) => {
       password: data.password,
     });
     return {
-      status: 200,
+      status: 201,
       data: userDetails._id,
       message: "User registered successfully",
     };

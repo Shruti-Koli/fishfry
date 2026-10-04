@@ -2,9 +2,8 @@ import {z} from "zod";
 import { statusEnum } from "../schemas/Task.js";
 
 export const getTask = z.object({
-    task_id : z.string().regex(/^[0-9a-fA-F]{24}$/, "task_id must be a valid ObjectId").optional(),
-    page : z.coerce.number().int().positive(),
-    limit : z.coerce.number().int().positive()
+    page : z.coerce.number().int().positive().default(1),
+    limit : z.coerce.number().int().positive().default(10)
 })
 
 const taskFields = {
@@ -14,7 +13,9 @@ const taskFields = {
     status: z.enum(statusEnum, "Status must be one of pending, inProgress, completed"),
 };
 
-const taskId = z.string().regex(/^[0-9a-fA-F]{24}$/, "task_id must be a valid ObjectId");
+export const taskParamsSchema = z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "id must be a valid ObjectId"),
+});
 
 const newTaskSchema = z.object({
     ...taskFields,
@@ -27,7 +28,6 @@ export const createTaskSchema = z.union([
 ]);
 
 export const updateTaskSchema = z.object({
-    task_id: taskId,
     name: taskFields.name.optional(),
     description: taskFields.description.optional(),
     dueDate: taskFields.dueDate.optional(),
@@ -36,7 +36,3 @@ export const updateTaskSchema = z.object({
     (data) => Object.keys(taskFields).some((field) => data[field] !== undefined),
     { message: "At least one task field is required to update" },
 );
-
-export const deleteTaskSchema = z.object({
-    task_id: taskId,
-});

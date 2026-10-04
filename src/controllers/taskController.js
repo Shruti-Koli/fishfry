@@ -4,12 +4,10 @@ import { TaskCollection } from "../schemas/Task.js";
 export const getTaskController = async (payload, userId) =>{
     try { 
 
-        const {task_id ,page, limit} = payload;
+        const { page = 1, limit = 10 } = payload;
         const filter = {
             user : new mongoose.Types.ObjectId(userId)
         }
-
-        if(task_id) filter["_id"] = new mongoose.Types.ObjectId(task_id);
 
         const [totalTasks, tasks] = await Promise.all([
             TaskCollection.countDocuments(filter).lean().exec(),
@@ -48,6 +46,19 @@ export const getTaskController = async (payload, userId) =>{
 }
 
 
+export const getTaskByIdController = async (taskId, userId) => {
+    const task = await TaskCollection.findOne({
+        _id: new mongoose.Types.ObjectId(taskId),
+        user: new mongoose.Types.ObjectId(userId),
+    }).select("-updatedAt -__v").lean().exec();
+
+    if (!task) {
+        return { status: 404, message: "Task not found" };
+    }
+
+    return { status: 200, data: task, message: "Task fetched successfully" };
+};
+
 export const createTask = async (data, userId) => {
     try{
         const taskData = (Array.isArray(data) ? data : [data]).map((task) => ({
@@ -67,20 +78,20 @@ export const createTask = async (data, userId) => {
     }
 }
 
-export const updateTask = async (data, userId) => {
+export const updateTask = async (taskId, data, userId) => {
     try{
+        const changes = { updatedAt: new Date() };
+        for (const field of ["description", "name", "dueDate", "status"]) {
+            if (data[field] !== undefined) changes[field] = data[field];
+        }
         let task = await TaskCollection.updateOne({
-            _id : new mongoose.Types.ObjectId(data.task_id),
+            _id : new mongoose.Types.ObjectId(taskId),
             user : new mongoose.Types.ObjectId(userId)
         },{
-            updatedAt : new Date(),
-            description : data.description,
-            name : data.name,
-            dueDate : data.dueDate,
-            status : data.status
+            $set: changes
         });
 
-        if(task.modifiedCount == 1){
+        if(task.matchedCount == 1){
             return {
                 status : 200,
                 data : task,
@@ -98,16 +109,16 @@ export const updateTask = async (data, userId) => {
     }
 }
 
-export const deleteTask = async (data, userId) => {
+export const deleteTask = async (taskId, userId) => {
     try{
         let task = await TaskCollection.deleteOne({
-            _id : new mongoose.Types.ObjectId(data.task_id),
+            _id : new mongoose.Types.ObjectId(taskId),
             user : new mongoose.Types.ObjectId(userId)
         });
 
         if(task.deletedCount == 1){
             return {
-                status : 200,
+                status : 204,
                 data : task,
                 message : "Tasks Deleted successfully"
             }

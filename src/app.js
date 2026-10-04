@@ -25,7 +25,7 @@ app.get("/health",(req,res)=>{
 
 app.use("/api/auth", userRoutes);
 app.use("/api/admin",authMiddleware,requireRoles(["admin"]), adminRoutes);
-app.use("/api/task",authMiddleware, taskRouter);
+app.use("/api/tasks",authMiddleware, taskRouter);
 
 
 export default app;
